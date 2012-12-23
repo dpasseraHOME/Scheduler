@@ -10,7 +10,7 @@ $(document).ready(function() {
 function auth() {
 	var config = {
 		'client_id': CLIENT_ID,
-		'scope': 'https://www.googleapis.com/auth/urlshortener'
+		'scope': 'https://www.googleapis.com/auth/calendar'
 
 	};
 	gapi.auth.authorize(config, function() {
