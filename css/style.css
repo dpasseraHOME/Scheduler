@@ -2,3 +2,15 @@
 {
 	display: none;
 }
+
+#header_container
+{
+	background-color: pink;
+	color: white;
+}
+
+#filter_container
+{
+	background-color: gray;
+	color: white;
+}

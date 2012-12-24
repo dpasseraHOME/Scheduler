@@ -1,2 +1,12 @@
 Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
+
+Next
+? Can I log in with user A (admin) and then add an event to the calendar of a user who has shared that calendar with user A?
+- add event to fec
+- drop down to select calendar to list / add
+
+-----
+
+- Navigation is single page, but different filters are reflected in the address bar as params.  Goal is to allow forward and backward navigation in a single page.
+- Load elements from external php files via ajax.
