@@ -37,14 +37,5 @@
 	<?php
 		include('schedule_container.php');
 	?>
-
-	<!--div id="get_events_container" class="hidden">
-		<button onclick="getCalendarEvents();">Get events</button>
-	</div>
-
-	<div id="add_event_container" class="hidden">
-		Event name:<input id="input_event_name" type="text">
-		<button onclick="addEvent();">Add event</button>
-	</div-->
-
+	
 </body>

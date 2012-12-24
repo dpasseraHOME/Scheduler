@@ -1,3 +1,8 @@
+var IS_LOCAL = true;
+
+var SERVER_URL = null;
+var SERVER_LOCAL = "server/action.php"
+
 var GOOGLE_API_KEY = "AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0";
 // for localhost
 var CLIENT_ID = "969439793066.apps.googleusercontent.com";
@@ -8,18 +13,12 @@ var FILTER_DAY = "Day";
 var FILTER_WEEK = "Week";
 var FILTER_MONTH = "Month";
 var FILTER_OVERVIEW = "Overview";
-var FILTER_TEAM_ARR = ['All','Front End','Back End','Design'];
-var FILTER_DEV_ARR = [];
-var FILTER_CALENDARID_ARR = [];
 
-var SCHED_VIEW_DAY = "scheduleViewDay";
-var SCHED_VIEW_WEEK = "scheduleViewWeek";
-var SCHED_VIEW_MONTH = "scheduleViewMonth";
-var SCHED_VIEW_DEFAULT = "scheduleViewDefault";
-var SCHED_TEAM_FE = "scheduleTeamFrontEnd";
-var SCHED_TEAM_BE = "scheduleTeamBackEnd";
-var SCHED_TEAM_GD = "scheduleTeamDesign";
-var SCHED_TEAM_ALL = "scheduleTeamAll";
+var _filterTeamArr = ['All'];
+var _filterDevArr = [];
+var _filterCalendarIdArr = [];
+
+var _sitePHP = null;
 
 var accessToken = null;
 var calendarId = "dante@smashingboxes.com";
@@ -28,6 +27,12 @@ $(document).ready(function() {
 	// hide schedule containers
 	$('#filter_container').addClass('hidden');
 	$('#schedule_container').addClass('hidden');
+
+	if(IS_LOCAL) {
+		_sitePHP = SERVER_LOCAL;
+	} else {
+		_sitePHP = SERVER_URL;
+	}
 });
 
 function auth() {
@@ -78,16 +83,20 @@ function populateFilters() {
 
 		// populate calendar id and dev arrays
 		for(var i=0; i<len; i++) {
-			FILTER_CALENDARID_ARR.push(resp.items[i].id);
-			FILTER_DEV_ARR.push((resp.items[i].summary.split('@'))[0]);
+			_filterCalendarIdArr.push(resp.items[i].id);
+			_filterDevArr.push((resp.items[i].summary.split('@'))[0]);
 		}
 	});
 
 	// populate whichSub
-	var len = FILTER_TEAM_ARR.length;
+	var params = {action: 'request_teams'};
+	ajaxPost(_sitePHP, params, onSuccess_getTeams, onError_getTeams);
+	/*
+	var len = _filterTeamArr.length;
 	for(var i=0; i<len; i++) {
-		$('#whichSub_select').append('<option value="'+FILTER_TEAM_ARR[i]+'">'+FILTER_TEAM_ARR[i]+'</option>');
+		$('#whichSub_select').append('<option value="'+_filterTeamArr[i]+'">'+_filterTeamArr[i]+'</option>');
 	}
+	*/
 
 	// populate when
 	$('#when_select').append('<option value="'+FILTER_OVERVIEW+'">Overview</option>');
@@ -95,7 +104,25 @@ function populateFilters() {
 	$('#when_select').append('<option value="'+FILTER_WEEK+'">Week</option>');
 	$('#when_select').append('<option value="'+FILTER_MONTH+'">Month</option>');
 
-	updateFilters(FILTER_TEAM, FILTER_TEAM_ARR[0], FILTER_OVERVIEW);
+	updateFilters(FILTER_TEAM, _filterTeamArr[0], FILTER_OVERVIEW);
+}
+
+function onSuccess_getTeams(data, status) {
+	console.log('# onSuccess_getTeams');
+	console.log(data);
+
+	// populate which
+	$('#whichSub_select').append('<option value="All">All</option>');
+
+	var len = data.teamArr.length;
+	for(var i=0; i<len; i++) {
+		_filterTeamArr.push(data.teamArr[i]);
+		$('#whichSub_select').append('<option value="'+_filterTeamArr[i+1]+'">'+_filterTeamArr[i+1]+'</option>');
+	}
+}
+
+function onError_getTeams(xhr) {
+
 }
 
 function updateFilters(whichStr, whichSubStr, whenStr) {
@@ -139,13 +166,27 @@ function addEventTEST() {
 }
 
 function getCalendarEventsTEST() {
-		var request = gapi.client.calendar.events.list({
-			'calendarId': calendarId
-		});
+	var request = gapi.client.calendar.events.list({
+		'calendarId': calendarId
+	});
 
-		request.execute(function(resp) {
-			for(var i=0; i<resp.items.length; i++) {
-				console.log(resp.items[i].summary);
-			}
-		});
+	request.execute(function(resp) {
+		for(var i=0; i<resp.items.length; i++) {
+			console.log(resp.items[i].summary);
+		}
+	});
+}
+
+function ajaxPost(url, params, onSuccess, onError) {
+
+	//$('#loader').show();
+
+	$.ajax({
+		type: "POST",
+		url: url,
+		data: params,
+		dataType: "json",
+		success: onSuccess,
+		error: onError
+	});
 }
