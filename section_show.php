@@ -2,6 +2,6 @@
 
 ?>
 
-<div id="section_content">
+<div id="show_content">
 	show
 </div>

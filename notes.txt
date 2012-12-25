@@ -2,11 +2,14 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- load in content from section php
 - Ability to define teams and add IDs to them.
 	- Pull team members from DB.
 	- New form for creating and updating teams.
 	- Send form to DB to create new team row.
+	- How?
+		- get calendarList (PM must manually add coworkers through gcal interface? Or can that be handled through API?)
+		- select or create team to update
+		- add and remove calendarids from teams
 
 -----
 

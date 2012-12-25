@@ -2,6 +2,6 @@
 
 ?>
 
-<div id="section_content">
+<div id="edit_content">
 	edit
 </div>

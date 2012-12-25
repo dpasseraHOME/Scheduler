@@ -9,7 +9,7 @@ var CLIENT_ID = "969439793066.apps.googleusercontent.com";
 
 var SECTION_SHOW = "show";
 var SECTION_EDIT = "edit";
-var SECTION_TEAM = "team;"
+var SECTION_MANAGE = "manage";
 
 var FILTER_TEAM = "Team";
 var FILTER_DEV = "Dev";
@@ -34,10 +34,8 @@ $(document).ready(function() {
 	$('#section_select_container').addClass('hidden');
 	$('#show_menu_container').addClass('hidden');
 	$('#edit_menu_container').addClass('hidden');
-	$('#team_menu_container').addClass('hidden');
+	$('#manage_menu_container').addClass('hidden');
 	$('#section_container').addClass('hidden');
-
-	$('#section_container').load('section_show.php #section_content');
 
 	if(IS_LOCAL) {
 		_sitePHP = SERVER_LOCAL;
@@ -45,14 +43,10 @@ $(document).ready(function() {
 		_sitePHP = SERVER_URL;
 	}
 
-	initSelects();
-});
-
-function initSelects() {
 	$('select[name="section"]').change(function() {
 		onChange_sectionSelect($(this).val());
 	});
-}
+});
 
 function auth() {
 	var config = {
@@ -78,6 +72,9 @@ function handleAuthSuccess() {
 
 	// hide authorization container
 	$('#auth_container').addClass('hidden');
+
+	hideSection(SECTION_MANAGE);
+	hideSection(SECTION_EDIT);
 
 	// reveal schedule containers
 	$('#section_select_container').removeClass('hidden');
@@ -195,22 +192,6 @@ function onChange_sectionSelect(valStr) {
 	console.log('# onChange_sectionSelect : '+valStr);
 
 	if(valStr != _curSection) {
-		/*
-		switch(valStr) {
-
-			case SECTION_SHOW:
-
-				break;
-
-			case SECTION_EDIT:
-
-				break;
-
-			case SECTION_TEAM:
-
-				break;
-
-		}*/
 
 		hideSection(_curSection);
 		showSection(valStr);
@@ -223,18 +204,24 @@ function hideSection(sectionToHideStr) {
 	console.log('# hideSection : '+sectionToHideStr);
 	
 	$('#'+sectionToHideStr+'_menu_container').addClass('hidden');
+	$('#'+sectionToHideStr+'_content').addClass('hidden');
 
+	/*
 	// remove #section_content
 	$('#section_content').remove();
+	*/
 }
 
 function showSection(sectionToShowStr) {
 	console.log('# showSection : '+sectionToShowStr);
 	
 	$('#'+sectionToShowStr+'_menu_container').removeClass('hidden');
+	$('#'+sectionToShowStr+'_content').removeClass('hidden');
 
+	/*
 	// load new #section_content
 	$('#section_container').load('section_'+sectionToShowStr+'.php #section_content');
+	*/
 }
 
 function ajaxPost(url, params, onSuccess, onError) {

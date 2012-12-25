@@ -24,7 +24,10 @@
 </div>
 
 <div id="edit_menu_container" class="menu-container">
-
+	<select name="manage">
+		<option value="devs">Devs</option>
+		<option value="teams">Teams</option>
+	</select>
 </div>
 
 <div id="team_menu_container" class="menu-container">
