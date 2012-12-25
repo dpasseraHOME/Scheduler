@@ -2,7 +2,7 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- section select changes visible menu
+- load in content from section php
 - Ability to define teams and add IDs to them.
 	- Pull team members from DB.
 	- New form for creating and updating teams.

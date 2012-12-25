@@ -34,8 +34,8 @@
 		include('auth_container.php');
 	?>
 
-	<?php
-		include('schedule_container.php');
-	?>
-	
+	<div id="section_container">
+
+	</div>
+
 </body>

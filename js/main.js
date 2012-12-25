@@ -35,7 +35,9 @@ $(document).ready(function() {
 	$('#show_menu_container').addClass('hidden');
 	$('#edit_menu_container').addClass('hidden');
 	$('#team_menu_container').addClass('hidden');
-	$('#schedule_container').addClass('hidden');
+	$('#section_container').addClass('hidden');
+
+	$('#section_container').load('section_show.php #section_content');
 
 	if(IS_LOCAL) {
 		_sitePHP = SERVER_LOCAL;
@@ -80,7 +82,7 @@ function handleAuthSuccess() {
 	// reveal schedule containers
 	$('#section_select_container').removeClass('hidden');
 	$('#show_menu_container').removeClass('hidden');
-	$('#schedule_container').removeClass('hidden');
+	$('#section_container').removeClass('hidden');
 }
 
 function handleAuthFailure() {
@@ -219,12 +221,20 @@ function onChange_sectionSelect(valStr) {
 
 function hideSection(sectionToHideStr) {
 	console.log('# hideSection : '+sectionToHideStr);
+	
 	$('#'+sectionToHideStr+'_menu_container').addClass('hidden');
+
+	// remove #section_content
+	$('#section_content').remove();
 }
 
 function showSection(sectionToShowStr) {
 	console.log('# showSection : '+sectionToShowStr);
+	
 	$('#'+sectionToShowStr+'_menu_container').removeClass('hidden');
+
+	// load new #section_content
+	$('#section_container').load('section_'+sectionToShowStr+'.php #section_content');
 }
 
 function ajaxPost(url, params, onSuccess, onError) {
