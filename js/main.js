@@ -7,6 +7,10 @@ var GOOGLE_API_KEY = "AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0";
 // for localhost
 var CLIENT_ID = "969439793066.apps.googleusercontent.com";
 
+var SECTION_SHOW = "show";
+var SECTION_EDIT = "edit";
+var SECTION_TEAM = "team;"
+
 var FILTER_TEAM = "Team";
 var FILTER_DEV = "Dev";
 var FILTER_DAY = "Day";
@@ -16,16 +20,21 @@ var FILTER_OVERVIEW = "Overview";
 
 var _filterTeamArr = ['All'];
 var _filterDevArr = [];
-var _filterCalendarIdArr = [];
+var _filterDevCalendarIdArr = [];
 
 var _sitePHP = null;
 
 var accessToken = null;
 var calendarId = "dante@smashingboxes.com";
 
+var _curSection = SECTION_SHOW;
+
 $(document).ready(function() {
 	// hide schedule containers
-	$('#filter_container').addClass('hidden');
+	$('#section_select_container').addClass('hidden');
+	$('#show_menu_container').addClass('hidden');
+	$('#edit_menu_container').addClass('hidden');
+	$('#team_menu_container').addClass('hidden');
 	$('#schedule_container').addClass('hidden');
 
 	if(IS_LOCAL) {
@@ -33,7 +42,15 @@ $(document).ready(function() {
 	} else {
 		_sitePHP = SERVER_URL;
 	}
+
+	initSelects();
 });
+
+function initSelects() {
+	$('select[name="section"]').change(function() {
+		onChange_sectionSelect($(this).val());
+	});
+}
 
 function auth() {
 	var config = {
@@ -61,7 +78,8 @@ function handleAuthSuccess() {
 	$('#auth_container').addClass('hidden');
 
 	// reveal schedule containers
-	$('#filter_container').removeClass('hidden');
+	$('#section_select_container').removeClass('hidden');
+	$('#show_menu_container').removeClass('hidden');
 	$('#schedule_container').removeClass('hidden');
 }
 
@@ -73,8 +91,8 @@ function populateFilters() {
 	console.log('# populateFilters');
 
 	// populate which
-	$('#which_select').append('<option value="'+FILTER_TEAM+'">Team</option>');
-	$('#which_select').append('<option value="'+FILTER_DEV+'">Dev</option>');
+	$('select[name="which"]').append('<option value="'+FILTER_TEAM+'">Team</option>');
+	$('select[name="which"]').append('<option value="'+FILTER_DEV+'">Dev</option>');
 
 	// get calendar list
 	var request = gapi.client.calendar.calendarList.list({});
@@ -83,26 +101,20 @@ function populateFilters() {
 
 		// populate calendar id and dev arrays
 		for(var i=0; i<len; i++) {
-			_filterCalendarIdArr.push(resp.items[i].id);
+			_filterDevCalendarIdArr.push(resp.items[i].id);
 			_filterDevArr.push((resp.items[i].summary.split('@'))[0]);
 		}
 	});
 
-	// populate whichSub
+	// populate which_sub
 	var params = {action: 'request_teams'};
 	ajaxPost(_sitePHP, params, onSuccess_getTeams, onError_getTeams);
-	/*
-	var len = _filterTeamArr.length;
-	for(var i=0; i<len; i++) {
-		$('#whichSub_select').append('<option value="'+_filterTeamArr[i]+'">'+_filterTeamArr[i]+'</option>');
-	}
-	*/
 
 	// populate when
-	$('#when_select').append('<option value="'+FILTER_OVERVIEW+'">Overview</option>');
-	$('#when_select').append('<option value="'+FILTER_DAY+'">Day</option>');
-	$('#when_select').append('<option value="'+FILTER_WEEK+'">Week</option>');
-	$('#when_select').append('<option value="'+FILTER_MONTH+'">Month</option>');
+	$('select[name="when"]').append('<option value="'+FILTER_OVERVIEW+'">Overview</option>');
+	$('select[name="when"]').append('<option value="'+FILTER_DAY+'">Day</option>');
+	$('select[name="when"]').append('<option value="'+FILTER_WEEK+'">Week</option>');
+	$('select[name="when"]').append('<option value="'+FILTER_MONTH+'">Month</option>');
 
 	updateFilters(FILTER_TEAM, _filterTeamArr[0], FILTER_OVERVIEW);
 }
@@ -111,13 +123,13 @@ function onSuccess_getTeams(data, status) {
 	console.log('# onSuccess_getTeams');
 	console.log(data);
 
-	// populate which
-	$('#whichSub_select').append('<option value="All">All</option>');
+	// populate which_sub
+	$('select[name="which_sub"]').append('<option value="All">All</option>');
 
 	var len = data.teamArr.length;
 	for(var i=0; i<len; i++) {
 		_filterTeamArr.push(data.teamArr[i]);
-		$('#whichSub_select').append('<option value="'+_filterTeamArr[i+1]+'">'+_filterTeamArr[i+1]+'</option>');
+		$('select[name="which_sub"]').append('<option value="'+_filterTeamArr[i+1]+'">'+_filterTeamArr[i+1]+'</option>');
 	}
 }
 
@@ -132,7 +144,7 @@ function updateFilters(whichStr, whichSubStr, whenStr) {
 }
 
 function onClick_filter() {
-	updateFilters($('#which_select').val(), $('#whichSub_select').val(), $('#when_select').val());
+	updateFilters($('select[name="which"]').val(), $('select[name="which_sub"]').val(), $('select[name="when"]').val());
 };
 
 /**
@@ -175,6 +187,44 @@ function getCalendarEventsTEST() {
 			console.log(resp.items[i].summary);
 		}
 	});
+}
+
+function onChange_sectionSelect(valStr) {
+	console.log('# onChange_sectionSelect : '+valStr);
+
+	if(valStr != _curSection) {
+		/*
+		switch(valStr) {
+
+			case SECTION_SHOW:
+
+				break;
+
+			case SECTION_EDIT:
+
+				break;
+
+			case SECTION_TEAM:
+
+				break;
+
+		}*/
+
+		hideSection(_curSection);
+		showSection(valStr);
+
+		_curSection = valStr;
+	}
+}
+
+function hideSection(sectionToHideStr) {
+	console.log('# hideSection : '+sectionToHideStr);
+	$('#'+sectionToHideStr+'_menu_container').addClass('hidden');
+}
+
+function showSection(sectionToShowStr) {
+	console.log('# showSection : '+sectionToShowStr);
+	$('#'+sectionToShowStr+'_menu_container').removeClass('hidden');
 }
 
 function ajaxPost(url, params, onSuccess, onError) {

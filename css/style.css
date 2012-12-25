@@ -9,7 +9,12 @@
 	color: white;
 }
 
-#filter_container
+#section_select_container
+{
+	background-color: dimgray;
+}
+
+.menu-container
 {
 	background-color: gray;
 	color: white;

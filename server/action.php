@@ -38,7 +38,7 @@ function request_teams($host, $user, $pass, $database) {
 		$teamArr[] = $row['name'];
 	}
 
-	$return['isSucces'] = 'yes';
+	$return['isSuccess'] = 'yes';
 	$return['teamArr'] = $teamArr;
 
 	echo json_encode($return);
