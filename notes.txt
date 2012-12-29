@@ -2,17 +2,14 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- Ability to define teams and add IDs to them.
-	- Pull team members from DB.
-	- New form for creating and updating teams.
-	- Send form to DB to create new team row.
-	- How?
-		- get calendarList (PM must manually add coworkers through gcal interface? Or can that be handled through API?)
-		- select or create team to update
-		- add and remove calendarids from teams
+
 
 -----
 
-- Navigation is single page, but different filters are reflected in the address bar as params.  Goal is to allow forward and backward navigation in a single page.
-- Load elements from external php files via ajax.
-? How to determine who is a member of which team? Hard-code IDs into arrays? Seems to remove some of the flexibility. Can a user create groups of imported calendars in their G cal?  Nope.  Looks like I'll need to add a limited php backend + DB for this functionality.
+To-do
+[ ] Show Calendars
+[w] Manage (Devs and Teams)
+	[ ] Add dev calendars to and remove dev calendars from list.
+	[w] Create teams.
+	[ ] Add devs to and remove devs from teams.
+[ ] Edit Calendars

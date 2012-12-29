@@ -19,3 +19,30 @@
 	background-color: gray;
 	color: white;
 }
+
+.list-panel
+{
+	height: 100%;
+	width: 33%;
+	padding: 12px 12px 12px 12px;
+	background: darkgray;
+}
+
+.list-panel li
+{
+	padding: 4px;
+	background: white;
+	cursor: pointer;
+}
+
+.details-panel
+{
+	height: 100%;
+	width: 67%;
+	padding: 12px 12px 12px 12px;
+}
+
+.add-item-container
+{
+	background: green;
+}

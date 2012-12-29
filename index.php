@@ -37,8 +37,8 @@
 	<div id="section_container">
 		<?php
 			include('section_show.php');
-			include('section_manage.php');
 			include('section_edit.php');
+			include('section_manage.php');
 		?>
 	</div>
 

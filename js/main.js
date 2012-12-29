@@ -18,9 +18,9 @@ var FILTER_WEEK = "Week";
 var FILTER_MONTH = "Month";
 var FILTER_OVERVIEW = "Overview";
 
-var _filterTeamArr = ['All'];
-var _filterDevArr = [];
-var _filterDevCalendarIdArr = [];
+var _teamNameArr = ['All'];
+var _devNameArr = [];
+var _devCalIdArr = [];
 
 var _sitePHP = null;
 
@@ -42,10 +42,6 @@ $(document).ready(function() {
 	} else {
 		_sitePHP = SERVER_URL;
 	}
-
-	$('select[name="section"]').change(function() {
-		onChange_sectionSelect($(this).val());
-	});
 });
 
 function auth() {
@@ -67,7 +63,8 @@ function auth() {
 function handleAuthSuccess() {
 	gapi.client.load('calendar','v3', function(){
 		console.log('calendar api loaded');
-		populateFilters();
+		//populateFilters();
+		getCalendarData();
 	});
 
 	// hide authorization container
@@ -80,10 +77,38 @@ function handleAuthSuccess() {
 	$('#section_select_container').removeClass('hidden');
 	$('#show_menu_container').removeClass('hidden');
 	$('#section_container').removeClass('hidden');
+
+	// activate section select
+	$('select[name="section"]').change(function() {
+		onChange_sectionSelect($(this).val());
+	});
+	// activate manage select
+	$('select[name="manage"]').change(function() {
+		onChange_manageSelect($(this).val());
+	});
 }
 
 function handleAuthFailure() {
 
+}
+
+function getCalendarData() {
+	// get calendar list
+	var request = gapi.client.calendar.calendarList.list({});
+	request.execute(function(resp){
+		var len = resp.items.length;
+
+		// populate calendar id and dev arrays
+		for(var i=0; i<len; i++) {
+			_devCalIdArr.push(resp.items[i].id);
+			_devNameArr.push((resp.items[i].summary.split('@'))[0]);
+		}
+
+		populateFilters();
+		showInit();
+		manageInit();
+		editInit();
+	});
 }
 
 function populateFilters() {
@@ -92,18 +117,6 @@ function populateFilters() {
 	// populate which
 	$('select[name="which"]').append('<option value="'+FILTER_TEAM+'">Team</option>');
 	$('select[name="which"]').append('<option value="'+FILTER_DEV+'">Dev</option>');
-
-	// get calendar list
-	var request = gapi.client.calendar.calendarList.list({});
-	request.execute(function(resp){
-		var len = resp.items.length;
-
-		// populate calendar id and dev arrays
-		for(var i=0; i<len; i++) {
-			_filterDevCalendarIdArr.push(resp.items[i].id);
-			_filterDevArr.push((resp.items[i].summary.split('@'))[0]);
-		}
-	});
 
 	// populate which_sub
 	var params = {action: 'request_teams'};
@@ -115,7 +128,12 @@ function populateFilters() {
 	$('select[name="when"]').append('<option value="'+FILTER_WEEK+'">Week</option>');
 	$('select[name="when"]').append('<option value="'+FILTER_MONTH+'">Month</option>');
 
-	updateFilters(FILTER_TEAM, _filterTeamArr[0], FILTER_OVERVIEW);
+	updateFilters(FILTER_TEAM, _teamNameArr[0], FILTER_OVERVIEW);	
+
+	// initialize sections
+	//showInit();
+	//manageInit();
+	//editInit();
 }
 
 function onSuccess_getTeams(data, status) {
@@ -127,8 +145,8 @@ function onSuccess_getTeams(data, status) {
 
 	var len = data.teamArr.length;
 	for(var i=0; i<len; i++) {
-		_filterTeamArr.push(data.teamArr[i]);
-		$('select[name="which_sub"]').append('<option value="'+_filterTeamArr[i+1]+'">'+_filterTeamArr[i+1]+'</option>');
+		_teamNameArr.push(data.teamArr[i]);
+		$('select[name="which_sub"]').append('<option value="'+_teamNameArr[i+1]+'">'+_teamNameArr[i+1]+'</option>');
 	}
 }
 
@@ -154,6 +172,114 @@ function onClick_filter() {
 function populateSchedule(calendarIdStr, viewStr) {
 	console.log('# populateSchedule : '+calendarIdStr+' : '+viewStr);
 }
+
+function onChange_sectionSelect(valStr) {
+	console.log('# onChange_sectionSelect : '+valStr);
+
+	if(valStr != _curSection) {
+
+		hideSection(_curSection);
+		showSection(valStr);
+
+		_curSection = valStr;
+	}
+}
+
+function hideSection(sectionToHideStr) {
+	console.log('# hideSection : '+sectionToHideStr);
+	
+	$('#'+sectionToHideStr+'_menu_container').addClass('hidden');
+	$('#'+sectionToHideStr+'_content').addClass('hidden');
+}
+
+function showSection(sectionToShowStr) {
+	console.log('# showSection : '+sectionToShowStr);
+	
+	$('#'+sectionToShowStr+'_menu_container').removeClass('hidden');
+	$('#'+sectionToShowStr+'_content').removeClass('hidden');
+
+
+}
+
+function ajaxPost(url, params, onSuccess, onError) {
+
+	//$('#loader').show();
+
+	$.ajax({
+		type: "POST",
+		url: url,
+		data: params,
+		dataType: "json",
+		success: onSuccess,
+		error: onError
+	});
+}
+
+// OO section show begin OO //
+
+function showInit() {
+
+}
+
+// XX section show begin XX //
+
+// OO section manage begin //
+
+var MANAGE_PANEL_DEVS = "manage_devs";
+var MANAGE_PANEL_TEAMS = "manage_teams";
+
+var _curManagePanel = MANAGE_PANEL_DEVS;
+
+function manageInit() {
+	console.log('# manageInit');
+
+	$('#manage_teams_container').addClass('hidden');
+
+	manage_populateDevList();
+	//TEST
+	manage_subscribeToDevCalendar();
+}
+
+function onChange_manageSelect(valStr) {
+	if(valStr != _curManagePanel) {
+		hideManageSection(_curManagePanel);
+		showManageSection(valStr);
+
+		_curManagePanel = valStr;
+	}
+}
+
+function showManageSection(sectionToShowStr) {
+	$('#'+sectionToShowStr+'_container').removeClass('hidden');
+}
+
+function hideManageSection(sectionToHideStr) {
+	$('#'+sectionToHideStr+'_container').addClass('hidden');
+}
+
+function manage_populateDevList() {
+	console.log('# manage_populateDevList');
+
+	var len = _devNameArr.length;
+	for(var i=0; i<len; i++) {
+		$('#devs_ul').append('<li>'+_devNameArr[i]+'</li>');
+	}
+}
+
+function manage_subscribeToDevCalendar() {
+	console.log('# manage_subscribeToDevCalendar');
+	
+}
+
+// XX section manage end //
+
+// OO section edit begin OO //
+
+function editInit() {
+
+}
+
+// XX section edit end XX //
 
 function addEventTEST() {
 	var name = 'okkkkk';
@@ -185,55 +311,5 @@ function getCalendarEventsTEST() {
 		for(var i=0; i<resp.items.length; i++) {
 			console.log(resp.items[i].summary);
 		}
-	});
-}
-
-function onChange_sectionSelect(valStr) {
-	console.log('# onChange_sectionSelect : '+valStr);
-
-	if(valStr != _curSection) {
-
-		hideSection(_curSection);
-		showSection(valStr);
-
-		_curSection = valStr;
-	}
-}
-
-function hideSection(sectionToHideStr) {
-	console.log('# hideSection : '+sectionToHideStr);
-	
-	$('#'+sectionToHideStr+'_menu_container').addClass('hidden');
-	$('#'+sectionToHideStr+'_content').addClass('hidden');
-
-	/*
-	// remove #section_content
-	$('#section_content').remove();
-	*/
-}
-
-function showSection(sectionToShowStr) {
-	console.log('# showSection : '+sectionToShowStr);
-	
-	$('#'+sectionToShowStr+'_menu_container').removeClass('hidden');
-	$('#'+sectionToShowStr+'_content').removeClass('hidden');
-
-	/*
-	// load new #section_content
-	$('#section_container').load('section_'+sectionToShowStr+'.php #section_content');
-	*/
-}
-
-function ajaxPost(url, params, onSuccess, onError) {
-
-	//$('#loader').show();
-
-	$.ajax({
-		type: "POST",
-		url: url,
-		data: params,
-		dataType: "json",
-		success: onSuccess,
-		error: onError
 	});
 }
