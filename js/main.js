@@ -298,6 +298,8 @@ function hideManageSection(sectionToHideStr) {
 function manage_populateDevList() {
 	console.log('# manage_populateDevList');
 
+	$('#devs_ul').html('');
+
 	var len = _devNameArr.length;
 	for(var i=0; i<len; i++) {
 		$('#devs_ul').append('<li>'+_devNameArr[i]+'</li>');
@@ -306,6 +308,8 @@ function manage_populateDevList() {
 
 function manage_populateTeamList() {
 	console.log('# manage_populateTeamList');
+
+	$('#teams_ul').html('');
 
 	var len = _teamNameArr.length;
 	for(var i=0; i<len; i++) {
@@ -328,6 +332,7 @@ function manage_setupDialogs() {
 			    "Create team": function() {
 			        	//TODO: validation
 			        	// get team name
+			        	manage_postAddTeam($('#add_team_input').val());
 			        	// post team name to db
 			            $(this).dialog("close");
 			    },
@@ -344,6 +349,31 @@ function manage_setupDialogs() {
 		.click(function() {
 			$( "#add_team_dialog" ).dialog( "open" );
 		});
+
+}
+
+function manage_postAddTeam(teamNameStr) {
+	console.log('# manage_postAddTeam');
+
+	var params = {action: 'add_team',
+					team_name: teamNameStr};
+	ajaxPost(_sitePHP, params, onSuccess_addTeam, onError_addTeam);
+}
+
+function onSuccess_addTeam(data, status) {
+	console.log('# onSuccess_addTeam');
+	console.log(data);
+
+	if(data.isSuccess == 'yes') {
+		_teamNameArr.push(data.teamName);
+		$('#add_team_input').val('');
+		manage_populateTeamList();
+	} else {
+		alert('A team by that name already exists.');
+	}
+}
+
+function onError_addTeam(xhr) {
 
 }
 

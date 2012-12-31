@@ -43,7 +43,7 @@
 		<form>
 			<fieldset>
 				<label for="name">Team name</label>
-				<input type="text" name="team" id="team" class="text ui-widget-content ui-corner-all" />
+				<input type="text" name="add_team" id="add_team_input" class="text ui-widget-content ui-corner-all" />
 			</fieldset>
 		</form>
 	</div>
