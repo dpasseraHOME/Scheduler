@@ -29,6 +29,9 @@ var calendarId = "dante@smashingboxes.com";
 
 var _curSection = SECTION_SHOW;
 
+var _isDevListReady = false;
+var _isTeamListReady = false;
+
 $(document).ready(function() {
 	// hide schedule containers
 	$('#section_select_container').addClass('hidden');
@@ -36,6 +39,8 @@ $(document).ready(function() {
 	$('#edit_menu_container').addClass('hidden');
 	$('#manage_menu_container').addClass('hidden');
 	$('#section_container').addClass('hidden');
+
+	manage_setupDialogs();
 
 	if(IS_LOCAL) {
 		_sitePHP = SERVER_LOCAL;
@@ -61,6 +66,8 @@ function auth() {
 }
 
 function handleAuthSuccess() {
+	getTeamData();
+
 	gapi.client.load('calendar','v3', function(){
 		console.log('calendar api loaded');
 		//populateFilters();
@@ -104,11 +111,24 @@ function getCalendarData() {
 			_devNameArr.push((resp.items[i].summary.split('@'))[0]);
 		}
 
+		_isDevListReady = true;
+		checkPreloadComplete();
+	});
+}
+
+function getTeamData() {// populate which_sub
+	var params = {action: 'request_teams'};
+	ajaxPost(_sitePHP, params, onSuccess_getTeams, onError_getTeams);
+}
+
+function checkPreloadComplete() {
+	console.log('# checkPreloadComplete : '+_isDevListReady+' : '+_isTeamListReady);
+	if(_isDevListReady && _isTeamListReady) {
 		populateFilters();
 		showInit();
 		manageInit();
 		editInit();
-	});
+	}
 }
 
 function populateFilters() {
@@ -119,8 +139,11 @@ function populateFilters() {
 	$('select[name="which"]').append('<option value="'+FILTER_DEV+'">Dev</option>');
 
 	// populate which_sub
-	var params = {action: 'request_teams'};
-	ajaxPost(_sitePHP, params, onSuccess_getTeams, onError_getTeams);
+	$('select[name="which_sub"]').append('<option value="All">All</option>');
+	var len = _teamNameArr.length;
+	for(var i=0; i<len; i++) {
+		$('select[name="which_sub"]').append('<option value="'+_teamNameArr[i+1]+'">'+_teamNameArr[i+1]+'</option>');
+	}
 
 	// populate when
 	$('select[name="when"]').append('<option value="'+FILTER_OVERVIEW+'">Overview</option>');
@@ -128,26 +151,20 @@ function populateFilters() {
 	$('select[name="when"]').append('<option value="'+FILTER_WEEK+'">Week</option>');
 	$('select[name="when"]').append('<option value="'+FILTER_MONTH+'">Month</option>');
 
-	updateFilters(FILTER_TEAM, _teamNameArr[0], FILTER_OVERVIEW);	
-
-	// initialize sections
-	//showInit();
-	//manageInit();
-	//editInit();
+	updateFilters(FILTER_TEAM, _teamNameArr[0], FILTER_OVERVIEW);
 }
 
 function onSuccess_getTeams(data, status) {
 	console.log('# onSuccess_getTeams');
 	console.log(data);
 
-	// populate which_sub
-	$('select[name="which_sub"]').append('<option value="All">All</option>');
-
 	var len = data.teamArr.length;
 	for(var i=0; i<len; i++) {
 		_teamNameArr.push(data.teamArr[i]);
-		$('select[name="which_sub"]').append('<option value="'+_teamNameArr[i+1]+'">'+_teamNameArr[i+1]+'</option>');
 	}
+
+	_isTeamListReady = true;
+	checkPreloadComplete();
 }
 
 function onError_getTeams(xhr) {
@@ -236,8 +253,17 @@ function manageInit() {
 	$('#manage_teams_container').addClass('hidden');
 
 	manage_populateDevList();
+	manage_populateTeamList();
 	//TEST
-	manage_subscribeToDevCalendar();
+	//manage_subscribeToDevCalendar();
+
+	// enable Add buttons
+	$('button[name="add_dev_calendar"]').click(function() {
+		onCick_manageButton('addDev');
+	});
+	$('button[name="add_team"]').click(function() {
+		onClick_manageButton('addTeam');
+	});
 }
 
 function onChange_manageSelect(valStr) {
@@ -246,6 +272,18 @@ function onChange_manageSelect(valStr) {
 		showManageSection(valStr);
 
 		_curManagePanel = valStr;
+	}
+}
+
+function onClick_manageButton(whichStr) {
+	switch(whichStr) {
+		case 'addDev':
+
+		break;
+
+		case 'addTeam':
+
+		break;
 	}
 }
 
@@ -266,9 +304,47 @@ function manage_populateDevList() {
 	}
 }
 
+function manage_populateTeamList() {
+	console.log('# manage_populateTeamList');
+
+	var len = _teamNameArr.length;
+	for(var i=0; i<len; i++) {
+		$('#teams_ul').append('<li>'+_teamNameArr[i]+'</li>');
+	}
+}
+
 function manage_subscribeToDevCalendar() {
 	console.log('# manage_subscribeToDevCalendar');
 	
+}
+
+function manage_setupDialogs() {
+	$('#add_team_dialog').dialog({
+			autoOpen: false,
+			height: 300,
+			width: 350,
+			modal: true,
+			buttons: {
+			    "Create team": function() {
+			        	//TODO: validation
+			        	// get team name
+			        	// post team name to db
+			            $(this).dialog("close");
+			    },
+			    Cancel: function() {
+			        $(this).dialog("close");
+			    }
+			},
+			close: function() {
+			}
+		});
+
+	$('button[name="add_team"]')
+		.button()
+		.click(function() {
+			$( "#add_team_dialog" ).dialog( "open" );
+		});
+
 }
 
 // XX section manage end //

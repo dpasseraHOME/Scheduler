@@ -2,14 +2,19 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-
+- Add Team dialog.
+- Add team to database.
+- Refresh team list after addition.
 
 -----
 
 To-do
-[ ] Show Calendars
-[w] Manage (Devs and Teams)
-	[ ] Add dev calendars to and remove dev calendars from list.
+[ ] Show Calendars.
+[w] Manage (Devs and Teams).
+	[ ] Add dev calendars to list.
+	[ ] Remove dev calendars from list.
 	[w] Create teams.
-	[ ] Add devs to and remove devs from teams.
-[ ] Edit Calendars
+	[ ] Delete teams.
+	[ ] Add devs to teams.
+	[ ] Remove devs from teams.
+[ ] Edit Calendars.
