@@ -2,6 +2,10 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
+- Update team in db.
+- Update select.
+- Update team array.
+- Update members list.
 
 -----
 

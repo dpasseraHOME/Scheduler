@@ -40,6 +40,9 @@
 				<select name="add_members">
 					<!-- add manage_devs options -->
 				</select>
+				<button name="add_member">
+					Add member
+				</button>
 				<div id="remove_team_container" class="remove-item-container">
 				<button name="remove_team">
 					+ Remove team

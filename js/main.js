@@ -313,6 +313,9 @@ function manageInit() {
 	$('button[name="remove_team"]').click(function() {
 		onClick_manageButton('removeTeam');
 	});
+	$('button[name="add_member"]').click(function() {
+		onClick_manageButton('addMember');
+	});
 }
 
 function onChange_manageSelect(valStr) {
@@ -340,6 +343,10 @@ function onClick_manageButton(whichStr) {
 
 		case 'removeTeam':
 		manage_postRemoveTeam(_curSelectedTeamName);
+		break;
+
+		case 'addMember':
+		manage_postAddMember($('select[name="add_members"]').val());
 		break;
 	}
 }
@@ -463,7 +470,7 @@ function manage_openTeamDetails(teamNameStr, teamIdInt) {
 	len = _devArr.length;
 	for(i=0; i<len; i++) {
 		if(members.indexOf(_devArr[i].devName) == -1) {
-			$('select[name="add_members"]').append('<option value="'+_devArr[i].calendarId+'">'+_devArr[i].devName+'</option>');
+			$('select[name="add_members"]').append('<option value="'+_devArr[i].calendarId+'" data-name="'+_devArr[i].devName+'">'+_devArr[i].devName+'</option>');
 		}
 	}
 }
@@ -500,6 +507,21 @@ function onSuccess_removeTeam(data, status) {
 
 function onError_removeTeam(xhr) {
 	console.log('# onError_removeTeam');
+}
+
+function manage_postAddMember(calendarIdStr) {
+	var params = {action: 'add_dev_to_team',
+					team_name: _curSelectedTeamName,
+					calendar_id: calendarIdStr};
+	ajaxPost(_sitePHP, params, onSuccess_addDevToTeam, onError_addDevToTeam);
+}
+
+function onSuccess_addDevToTeam(data, status) {
+
+}
+
+function onError_addDevToTeam(xhr) {
+
 }
 
 // XX section manage end //

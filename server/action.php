@@ -32,6 +32,10 @@ switch($action) {
 		remove_team($host, $user, $pass, $database, $_POST['team_name']);
 		break;
 
+	case 'add_dev_to_team':
+		add_dev_to_team($host, $user, $pass, $database, $_POST['team_name'], $_POST['calendar_id']);
+		break;
+
 }
 
 function request_teams($host, $user, $pass, $database) {
@@ -93,6 +97,43 @@ function remove_team($host, $user, $pass, $database, $teamName) {
 	$return['isSuccess'] = 'yes';
 	$return['msg'] = 'team removed from db';
 	$return['teamName'] = $teamName;
+
+	echo json_encode($return);
+}
+
+function add_dev_to_team($host, $user, $pass, $database, $teamName, $calendarId) {
+
+	$linkID = mysql_connect($host, $user, $pass) or die("Could not connect to host.");
+	mysql_select_db($database, $linkID) or die("Could not find database.");
+
+	// get team row
+	$query = "SELECT * FROM _teams WHERE name='".$teamName."'";
+	$result = mysql_query($query, $linkID) or die("SELECT _teams failed.");
+
+	$numResults = mysql_num_rows($result);
+
+	if($numResults > 0) {
+		while($row = mysql_fetch_assoc($result)) {
+			$calendarIds = $row['calendar_ids'];
+		}
+		// check team row for 'none'
+		if($calendarIds == 'none') {
+			// replace field with calendarId
+			$query = "UPDATE _teams SET calendar_ids='".$calendarId."' WHERE name='".$teamName."'";
+			$result2 = mysql_query($query, $linkID) or die("UPDATE _teams failed.");
+		} else {
+			// append ',' + calendarId
+			$calendarIds .= ','.$calendarId;
+			$query = "UPDATE _teams SET calendar_ids='".$calendarIds."' WHERE name='".$teamName."'";
+			$result2 = mysql_query($query, $linkID) or die("UPDATE _teams failed.");
+		}
+
+		$return['isSuccess'] = 'yes';
+		$return['msg'] = "$calendarId added to $teamName.";
+	} else {
+		$return['isSuccess'] = 'no';
+		$return['msg'] = 'could not find team in db.';
+	}
 
 	echo json_encode($return);
 }
