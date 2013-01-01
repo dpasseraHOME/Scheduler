@@ -18,7 +18,7 @@ var FILTER_WEEK = "Week";
 var FILTER_MONTH = "Month";
 var FILTER_OVERVIEW = "Overview";
 
-var _teamNameArr = ['All'];
+var _teamArr = [];
 var _devNameArr = [];
 var _devCalIdArr = [];
 
@@ -144,9 +144,9 @@ function populateFilters() {
 
 	// populate which_sub
 	$('select[name="which_sub"]').append('<option value="All">All</option>');
-	var len = _teamNameArr.length;
-	for(var i=0; i<len; i++) {
-		$('select[name="which_sub"]').append('<option value="'+_teamNameArr[i+1]+'">'+_teamNameArr[i+1]+'</option>');
+	var len = _teamArr.length;
+	for(var i=1; i<len; i++) {
+		$('select[name="which_sub"]').append('<option value="'+_teamArr[i].teamName+'">'+_teamArr[i].teamName+'</option>');
 	}
 
 	// populate when
@@ -155,16 +155,26 @@ function populateFilters() {
 	$('select[name="when"]').append('<option value="'+FILTER_WEEK+'">Week</option>');
 	$('select[name="when"]').append('<option value="'+FILTER_MONTH+'">Month</option>');
 
-	updateFilters(FILTER_TEAM, _teamNameArr[0], FILTER_OVERVIEW);
+	updateFilters(FILTER_TEAM, _teamArr[0].teamName, FILTER_OVERVIEW);
 }
 
 function onSuccess_getTeams(data, status) {
 	console.log('# onSuccess_getTeams');
 	console.log(data);
 
+	var team = new Object();
+	team.teamName = 'All';
+	_teamArr.push(team);
+
 	var len = data.teamArr.length;
 	for(var i=0; i<len; i++) {
-		_teamNameArr.push(data.teamArr[i]);
+		team = new Object();
+		team.teamName = data.teamArr[i];
+		_teamArr.push(team);
+	}
+
+	for(i=0; i<=len; i++) {
+		console.log(_teamArr[i].teamName);
 	}
 
 	_isTeamListReady = true;
@@ -288,7 +298,7 @@ function onChange_manageSelect(valStr) {
 function onClick_manageButton(whichStr) {
 	switch(whichStr) {
 		case 'addDev':
-
+		alert('Currently, dev calendars must be added through the standard Google Calendar interface.');
 		break;
 
 		case 'addTeam':
@@ -329,9 +339,9 @@ function manage_populateTeamList() {
 
 	$('#teams_ul').html('');
 
-	var len = _teamNameArr.length;
+	var len = _teamArr.length;
 	for(var i=0; i<len; i++) {
-		$('#teams_ul').append(manage_createTeamListItem(_teamNameArr[i]));
+		$('#teams_ul').append(manage_createTeamListItem(_teamArr[i].teamName));
 	}
 
 	$('#teams_ul li').click(function() {
@@ -386,7 +396,10 @@ function onSuccess_addTeam(data, status) {
 	console.log(data);
 
 	if(data.isSuccess == 'yes') {
-		_teamNameArr.push(data.teamName);
+		var team = new Object();
+		team.teamName = data.teamName;
+		//TODO: add array of team members
+		_teamArr.push(team);
 		$('#add_team_input').val('');
 		manage_populateTeamList();
 	} else {
@@ -420,9 +433,17 @@ function manage_postRemoveTeam(teamNameStr)  {
 
 function onSuccess_removeTeam(data, status) {
 	if(data.isSuccess == 'yes') {
-		var index = _teamNameArr.indexOf(data.teamName);
-		_teamNameArr.splice(index, 1);
-		manage_populateTeamList();
+		var len = _teamArr.length;
+		var index = -1;
+		for(var i=0; i<len; i++) {
+			if(_teamArr[i].teamName == data.teamName) {
+				index = i;
+			}
+		}
+		if(index > -1) {
+			_teamArr.splice(index, 1);
+			manage_populateTeamList();
+		}
 	} else {
 		alert('Unable to delete team.');
 	}
