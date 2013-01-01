@@ -2,23 +2,27 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- Add delete button to team list item.
-- Delete team from db.
 
 - "Currently, dev calendars must be added through Google Calendar site."
 
 -----
 
-To-do - rough functionality
+To-do - Rough functionality
 [ ] Show Calendars.
 [w] Manage (Devs and Teams).
 	[ ] Add dev calendars to list.
 	[ ] Remove dev calendars from list.
+	[ ] Dev details panel.
 	[c] Create teams.
-	[w] Delete teams.
-	[ ] Add devs to teams.
+	[c] Delete teams.
+	[w] Add devs to teams.
 	[ ] Remove devs from teams.
+	[w] Team details panel.
 [ ] Edit Calendars.
 
 Future
 [ ] "Add team" form validation.
+[ ] Error checking for database actions.
+
+Issues of which to be aware
+[ ] jquery ui is overriding some styling (add_team button).

@@ -33,7 +33,19 @@
 			</div>
 		</div>
 		<div id="manage_teams_details" class="details-panel">
-
+			<div id="team_add_members">
+				<ul id="members_ul">
+					<!-- add team members -->
+				</ul>
+				<select name="add_members">
+					<!-- add manage_devs options -->
+				</select>
+				<div id="remove_team_container" class="remove-item-container">
+				<button name="remove_team">
+					+ Remove team
+				</button>
+			</div>
+			</div>
 		</div>
 	</div>
 

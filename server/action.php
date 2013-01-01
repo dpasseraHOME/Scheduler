@@ -28,6 +28,10 @@ switch($action) {
 		add_team($host, $user, $pass, $database, $_POST['team_name']);
 		break;
 
+	case 'remove_team':
+		remove_team($host, $user, $pass, $database, $_POST['team_name']);
+		break;
+
 }
 
 function request_teams($host, $user, $pass, $database) {
@@ -71,6 +75,20 @@ function add_team($host, $user, $pass, $database, $teamName) {
 		$return['msg'] = 'team added to db';
 		$return['teamName'] = $teamName;
 	}
+
+	echo json_encode($return);
+}
+
+function remove_team($host, $user, $pass, $database, $teamName) {
+	$linkID = mysql_connect($host, $user, $pass) or die("Could not connect to host.");
+	mysql_select_db($database, $linkID) or die("Could not find database.");
+
+	$query = "DELETE FROM _teams WHERE name='".$teamName."'";
+	$result = mysql_query($query, $linkID) or die("DELETE _teams failed.");
+
+	$return['isSuccess'] = 'yes';
+	$return['msg'] = 'team removed from db';
+	$return['teamName'] = $teamName;
 
 	echo json_encode($return);
 }

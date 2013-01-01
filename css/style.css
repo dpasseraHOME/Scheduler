@@ -23,8 +23,9 @@
 .list-panel
 {
 	height: 100%;
-	width: 33%;
+	width: 300px;
 	padding: 12px 12px 12px 12px;
+	float: left;
 	background: darkgray;
 }
 
@@ -38,11 +39,17 @@
 .details-panel
 {
 	height: 100%;
-	width: 67%;
+	width: 300px;
 	padding: 12px 12px 12px 12px;
+	float: left;
 }
 
 .add-item-container
 {
 	background: green;
+}
+
+.remove-item-container
+{
+	background: red;
 }

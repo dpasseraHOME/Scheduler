@@ -100,6 +100,8 @@ function handleAuthFailure() {
 }
 
 function getCalendarData() {
+	console.log('# getCalendarData');
+
 	// get calendar list
 	var request = gapi.client.calendar.calendarList.list({});
 	request.execute(function(resp){
@@ -117,6 +119,8 @@ function getCalendarData() {
 }
 
 function getTeamData() {// populate which_sub
+	console.log('# getTeamData');
+
 	var params = {action: 'request_teams'};
 	ajaxPost(_sitePHP, params, onSuccess_getTeams, onError_getTeams);
 }
@@ -168,7 +172,8 @@ function onSuccess_getTeams(data, status) {
 }
 
 function onError_getTeams(xhr) {
-
+	console.log('# onError_getTeams');
+	alert('Database could not be reached.');
 }
 
 function updateFilters(whichStr, whichSubStr, whenStr) {
@@ -246,11 +251,13 @@ var MANAGE_PANEL_DEVS = "manage_devs";
 var MANAGE_PANEL_TEAMS = "manage_teams";
 
 var _curManagePanel = MANAGE_PANEL_DEVS;
+var _curSelectedTeamName = null;
 
 function manageInit() {
 	console.log('# manageInit');
 
 	$('#manage_teams_container').addClass('hidden');
+	$('#manage_teams_details').addClass('hidden');
 
 	manage_populateDevList();
 	manage_populateTeamList();
@@ -263,6 +270,9 @@ function manageInit() {
 	});
 	$('button[name="add_team"]').click(function() {
 		onClick_manageButton('addTeam');
+	});
+	$('button[name="remove_team"]').click(function() {
+		onClick_manageButton('removeTeam');
 	});
 }
 
@@ -282,7 +292,15 @@ function onClick_manageButton(whichStr) {
 		break;
 
 		case 'addTeam':
+		$('#add_team_dialog').dialog('open');
+		break;
 
+		case 'removeDev':
+
+		break;
+
+		case 'removeTeam':
+		manage_postRemoveTeam(_curSelectedTeamName);
 		break;
 	}
 }
@@ -313,8 +331,18 @@ function manage_populateTeamList() {
 
 	var len = _teamNameArr.length;
 	for(var i=0; i<len; i++) {
-		$('#teams_ul').append('<li>'+_teamNameArr[i]+'</li>');
+		$('#teams_ul').append(manage_createTeamListItem(_teamNameArr[i]));
 	}
+
+	$('#teams_ul li').click(function() {
+		manage_openTeamDetails($(this).data('name'));
+	});
+}
+
+function manage_createTeamListItem(teamNameStr) {
+	var teamListItem = '<li data-name="'+teamNameStr+'">'+teamNameStr+'</li>';
+
+	return teamListItem;
 }
 
 function manage_subscribeToDevCalendar() {
@@ -343,13 +371,6 @@ function manage_setupDialogs() {
 			close: function() {
 			}
 		});
-
-	$('button[name="add_team"]')
-		.button()
-		.click(function() {
-			$( "#add_team_dialog" ).dialog( "open" );
-		});
-
 }
 
 function manage_postAddTeam(teamNameStr) {
@@ -375,6 +396,40 @@ function onSuccess_addTeam(data, status) {
 
 function onError_addTeam(xhr) {
 
+}
+
+function manage_openTeamDetails(teamNameStr) {
+	console.log('# manage_openTeamDetails');
+
+	_curSelectedTeamName = teamNameStr;
+
+	$('#manage_teams_details').removeClass('hidden');
+
+	// clear details
+	$('#members_ul').html();
+	$('#add_members').html();
+
+	// populate details
+}
+
+function manage_postRemoveTeam(teamNameStr)  {
+	var params = {action: 'remove_team',
+					team_name: teamNameStr};
+	ajaxPost(_sitePHP, params, onSuccess_removeTeam, onError_removeTeam);
+}
+
+function onSuccess_removeTeam(data, status) {
+	if(data.isSuccess == 'yes') {
+		var index = _teamNameArr.indexOf(data.teamName);
+		_teamNameArr.splice(index, 1);
+		manage_populateTeamList();
+	} else {
+		alert('Unable to delete team.');
+	}
+}
+
+function onError_removeTeam(xhr) {
+	console.log('# onError_removeTeam');
 }
 
 // XX section manage end //
