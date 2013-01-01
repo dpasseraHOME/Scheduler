@@ -42,12 +42,16 @@ function request_teams($host, $user, $pass, $database) {
 	$result = mysql_query($query, $linkID) or die("SELECT _teams failed.");
 
 	$teamArr = array();
+	$membersArr = array();
+
 	while($row = mysql_fetch_assoc($result)) {
 		$teamArr[] = $row['name'];
+		$membersArr[] = $row['calendar_ids'];
 	}
 
 	$return['isSuccess'] = 'yes';
 	$return['teamArr'] = $teamArr;
+	$return['membersArr'] = $membersArr;
 
 	echo json_encode($return);
 }

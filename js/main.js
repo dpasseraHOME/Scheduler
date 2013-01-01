@@ -166,16 +166,32 @@ function onSuccess_getTeams(data, status) {
 	team.teamName = 'All';
 	_teamArr.push(team);
 
+	var members = [];
+
 	var len = data.teamArr.length;
 	for(var i=0; i<len; i++) {
 		team = new Object();
+		// add team name to team object
 		team.teamName = data.teamArr[i];
+
+		// add team members to team object
+		members = data.membersArr[i];
+		team.teamMembers = members.split(',');
+
 		_teamArr.push(team);
 	}
 
-	for(i=0; i<=len; i++) {
+	/*
+	var j;
+	var len2;
+	for(i=1; i<=len; i++) {
 		console.log(_teamArr[i].teamName);
+		len2 = _teamArr[i].teamMembers.length;
+		for(j=0; j<len2; j++) {
+			console.log(_teamArr[i].teamMembers[j]);
+		}
 	}
+	*/
 
 	_isTeamListReady = true;
 	checkPreloadComplete();

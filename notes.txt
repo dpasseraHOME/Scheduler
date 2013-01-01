@@ -2,8 +2,7 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- Re-factor _teamNameArr into _teamArr, an array of objects with
-	properties of String teamName and Array teamMembers.
+- Add team members to team arr when populating.
 - Populate team members list.
 - Populate Add Member select with devs not currently on team.
 
