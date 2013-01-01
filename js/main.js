@@ -19,6 +19,7 @@ var FILTER_MONTH = "Month";
 var FILTER_OVERVIEW = "Overview";
 
 var _teamArr = [];
+var _devArr = [];
 var _devNameArr = [];
 var _devCalIdArr = [];
 
@@ -113,10 +114,14 @@ function getCalendarData() {
 	request.execute(function(resp){
 		var len = resp.items.length;
 
-		// populate calendar id and dev arrays
+		// populate calendar id and dev array
+		var dev = new Object();
+
 		for(var i=0; i<len; i++) {
-			_devCalIdArr.push(resp.items[i].id);
-			_devNameArr.push((resp.items[i].summary.split('@'))[0]);
+			dev = new Object();
+			dev.devName = (resp.items[i].summary.split('@'))[0];
+			dev.calendarId = resp.items[i].id;
+			_devArr.push(dev);
 		}
 
 		_isDevListReady = true;
@@ -350,9 +355,9 @@ function manage_populateDevList() {
 
 	$('#devs_ul').html('');
 
-	var len = _devNameArr.length;
+	var len = _devArr.length;
 	for(var i=0; i<len; i++) {
-		$('#devs_ul').append('<li>'+_devNameArr[i]+'</li>');
+		$('#devs_ul').append('<li>'+_devArr[i].devName+'</li>');
 	}
 }
 
@@ -453,7 +458,7 @@ function manage_openTeamDetails(teamNameStr, teamIdInt) {
 	}
 
 	// populate dev select
-	
+
 }
 
 function manage_createDevListItem(devNameStr) {
