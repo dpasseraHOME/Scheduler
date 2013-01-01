@@ -20,8 +20,6 @@ var FILTER_OVERVIEW = "Overview";
 
 var _teamArr = [];
 var _devArr = [];
-var _devNameArr = [];
-var _devCalIdArr = [];
 
 var _sitePHP = null;
 
@@ -37,6 +35,10 @@ var _isTeamListReady = false;
 Team object
 - String teamName
 - String[] teamMembers
+
+Dev object
+- String devName
+- String calendarId
 */
 
 $(document).ready(function() {
@@ -447,7 +449,7 @@ function manage_openTeamDetails(teamNameStr, teamIdInt) {
 
 	// clear details
 	$('#members_ul').html('');
-	$('#add_members').html('');
+	$('select[name="add_members"]').html('');
 
 	// populate details
 	// populate member list
@@ -458,7 +460,12 @@ function manage_openTeamDetails(teamNameStr, teamIdInt) {
 	}
 
 	// populate dev select
-
+	len = _devArr.length;
+	for(i=0; i<len; i++) {
+		if(members.indexOf(_devArr[i].devName) == -1) {
+			$('select[name="add_members"]').append('<option value="'+_devArr[i].calendarId+'">'+_devArr[i].devName+'</option>');
+		}
+	}
 }
 
 function manage_createDevListItem(devNameStr) {

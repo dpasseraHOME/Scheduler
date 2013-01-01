@@ -2,7 +2,6 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- Populate Add Member select with devs not currently on team.
 
 -----
 
