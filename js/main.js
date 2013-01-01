@@ -32,6 +32,12 @@ var _curSection = SECTION_SHOW;
 var _isDevListReady = false;
 var _isTeamListReady = false;
 
+/*
+Team object
+- String teamName
+- String[] teamMembers
+*/
+
 $(document).ready(function() {
 	// hide schedule containers
 	$('#section_select_container').addClass('hidden');
@@ -357,16 +363,16 @@ function manage_populateTeamList() {
 
 	var len = _teamArr.length;
 	for(var i=0; i<len; i++) {
-		$('#teams_ul').append(manage_createTeamListItem(_teamArr[i].teamName));
+		$('#teams_ul').append(manage_createTeamListItem(_teamArr[i].teamName, i));
 	}
 
 	$('#teams_ul li').click(function() {
-		manage_openTeamDetails($(this).data('name'));
+		manage_openTeamDetails($(this).data('name'), $(this).data('index'));
 	});
 }
 
-function manage_createTeamListItem(teamNameStr) {
-	var teamListItem = '<li data-name="'+teamNameStr+'">'+teamNameStr+'</li>';
+function manage_createTeamListItem(teamNameStr, teamIdInt) {
+	var teamListItem = '<li data-name="'+teamNameStr+'" data-index="'+teamIdInt+'">'+teamNameStr+'</li>';
 
 	return teamListItem;
 }
@@ -427,18 +433,33 @@ function onError_addTeam(xhr) {
 
 }
 
-function manage_openTeamDetails(teamNameStr) {
-	console.log('# manage_openTeamDetails');
+function manage_openTeamDetails(teamNameStr, teamIdInt) {
+	console.log('# manage_openTeamDetails : '+teamNameStr+' : '+teamIdInt);
 
 	_curSelectedTeamName = teamNameStr;
 
 	$('#manage_teams_details').removeClass('hidden');
 
 	// clear details
-	$('#members_ul').html();
-	$('#add_members').html();
+	$('#members_ul').html('');
+	$('#add_members').html('');
 
 	// populate details
+	// populate member list
+	var members = _teamArr[teamIdInt].teamMembers;
+	var len = members.length;
+	for(var i=0; i<len; i++) {
+		$('#members_ul').append(manage_createDevListItem(members[i]));
+	}
+
+	// populate dev select
+	
+}
+
+function manage_createDevListItem(devNameStr) {
+	var devListItem = '<li data-name="'+devNameStr+'" >'+devNameStr+'</li>';
+
+	return devListItem;
 }
 
 function manage_postRemoveTeam(teamNameStr)  {
