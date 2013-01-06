@@ -130,6 +130,8 @@ function add_dev_to_team($host, $user, $pass, $database, $teamName, $calendarId)
 
 		$return['isSuccess'] = 'yes';
 		$return['msg'] = "$calendarId added to $teamName.";
+		$return['teamName'] = $teamName;
+		$return['calendarId'] = $calendarId;
 	} else {
 		$return['isSuccess'] = 'no';
 		$return['msg'] = 'could not find team in db.';

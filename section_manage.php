@@ -33,6 +33,8 @@
 			</div>
 		</div>
 		<div id="manage_teams_details" class="details-panel">
+			<div id="details_team_name">
+			</div>
 			<div id="team_add_members">
 				<ul id="members_ul">
 					<!-- add team members -->

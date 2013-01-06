@@ -18,8 +18,19 @@ var FILTER_WEEK = "Week";
 var FILTER_MONTH = "Month";
 var FILTER_OVERVIEW = "Overview";
 
+// array of Team objects
 var _teamArr = [];
+// array of Dev objects
 var _devArr = [];
+/*
+Team object
+- String teamName
+- String[] teamCalendarIds - array of calendarIds (eventually)
+
+Dev object
+- String devName
+- String calendarId
+*/
 
 var _sitePHP = null;
 
@@ -30,16 +41,6 @@ var _curSection = SECTION_SHOW;
 
 var _isDevListReady = false;
 var _isTeamListReady = false;
-
-/*
-Team object
-- String teamName
-- String[] teamMembers
-
-Dev object
-- String devName
-- String calendarId
-*/
 
 $(document).ready(function() {
 	// hide schedule containers
@@ -189,7 +190,7 @@ function onSuccess_getTeams(data, status) {
 
 		// add team members to team object
 		members = data.membersArr[i];
-		team.teamMembers = members.split(',');
+		team.teamCalendarIds = members.split(',');
 
 		_teamArr.push(team);
 	}
@@ -199,9 +200,9 @@ function onSuccess_getTeams(data, status) {
 	var len2;
 	for(i=1; i<=len; i++) {
 		console.log(_teamArr[i].teamName);
-		len2 = _teamArr[i].teamMembers.length;
+		len2 = _teamArr[i].teamCalendarIds.length;
 		for(j=0; j<len2; j++) {
-			console.log(_teamArr[i].teamMembers[j]);
+			console.log(_teamArr[i].teamCalendarIds[j]);
 		}
 	}
 	*/
@@ -434,7 +435,7 @@ function onSuccess_addTeam(data, status) {
 	if(data.isSuccess == 'yes') {
 		var team = new Object();
 		team.teamName = data.teamName;
-		//TODO: add array of team members
+		team.teamCalendarIds = [];
 		_teamArr.push(team);
 		$('#add_team_input').val('');
 		manage_populateTeamList();
@@ -454,23 +455,26 @@ function manage_openTeamDetails(teamNameStr, teamIdInt) {
 
 	$('#manage_teams_details').removeClass('hidden');
 
+	$('#details_team_name').html(teamNameStr);
+
 	// clear details
 	$('#members_ul').html('');
 	$('select[name="add_members"]').html('');
 
 	// populate details
-	// populate member list
-	var members = _teamArr[teamIdInt].teamMembers;
+	/// populate member list
+	var members = _teamArr[teamIdInt].teamCalendarIds;
 	var len = members.length;
 	for(var i=0; i<len; i++) {
 		$('#members_ul').append(manage_createDevListItem(members[i]));
 	}
 
-	// populate dev select
+	/// populate dev select
 	len = _devArr.length;
 	for(i=0; i<len; i++) {
-		if(members.indexOf(_devArr[i].devName) == -1) {
-			$('select[name="add_members"]').append('<option value="'+_devArr[i].calendarId+'" data-name="'+_devArr[i].devName+'">'+_devArr[i].devName+'</option>');
+		if(members.indexOf(_devArr[i].calendarId) == -1) {
+			//$('select[name="add_members"]').append('<option value="'+_devArr[i].calendarId+'" data-name="'+_devArr[i].devName+'">'+_devArr[i].devName+'</option>');
+			$('select[name="add_members"]').append(manage_createDetailsDevSelectItem(_devArr[i]));
 		}
 	}
 }
@@ -479,6 +483,12 @@ function manage_createDevListItem(devNameStr) {
 	var devListItem = '<li data-name="'+devNameStr+'" >'+devNameStr+'</li>';
 
 	return devListItem;
+}
+
+function manage_createDetailsDevSelectItem(devObject) {
+	var devSelectItem = '<option value="'+devObject.calendarId+'" data-name="'+devObject.devName+'">'+devObject.devName+'</option>';
+
+	return devSelectItem;
 }
 
 function manage_postRemoveTeam(teamNameStr)  {
@@ -517,7 +527,25 @@ function manage_postAddMember(calendarIdStr) {
 }
 
 function onSuccess_addDevToTeam(data, status) {
+	if(data.isSuccess == 'yes') {
+		alert(data.calendarId+' has been added to '+data.teamName);
 
+		// update details select
+		$('select[name="add_members"] option[value="'+data.calendarId+'"]').remove();
+
+		// update details member list
+		$('#members_ul').append(manage_createDevListItem(data.calendarId));
+
+		// update team array
+		var len = _teamArr.length;
+		for(var i=0; i<len; i++) {
+			if(_teamArr[i].teamName == data.teamName) {
+				console.log('! found team '+data.teamName);
+				_teamArr[i].teamCalendarIds.push(data.calendarId);
+				break;
+			}
+		}
+	}
 }
 
 function onError_addDevToTeam(xhr) {
