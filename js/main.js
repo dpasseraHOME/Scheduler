@@ -178,6 +178,7 @@ function onSuccess_getTeams(data, status) {
 
 	var team = new Object();
 	team.teamName = 'All';
+	//TODO: add all available calendar ids to teams
 	_teamArr.push(team);
 
 	var members = [];
@@ -442,10 +443,12 @@ function onSuccess_addTeam(data, status) {
 	} else {
 		alert('A team by that name already exists.');
 	}
+
+	manage_openTeamDetails(data.teamName, _teamArr.length-1);
 }
 
 function onError_addTeam(xhr) {
-
+	alert('Team could not be added. Please try again.');
 }
 
 function manage_openTeamDetails(teamNameStr, teamIdInt) {

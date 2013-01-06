@@ -2,7 +2,7 @@ Google API key
 AIzaSyBm2aZhHwkDvM-1K1N2v-TvwUGS2UnZlq0
 
 Next
-- Display team details panel when team created.
+
 
 -----
 
@@ -11,12 +11,12 @@ To-do - Rough functionality
 [w] Manage (Devs and Teams).
 	[ ] Add dev calendars to list.
 	[ ] Remove dev calendars from list.
-	[ ] Dev details panel.
+	[ ] Dev details panel.	
 	[c] Create teams.
 	[c] Delete teams.
-	[w] Add devs to teams.
-	[ ] Remove devs from teams.
 	[w] Team details panel.
+		[c] Add devs to teams.
+		[w] Remove devs from teams.
 [ ] Edit Calendars.
 
 Future

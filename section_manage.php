@@ -47,7 +47,7 @@
 				</button>
 				<div id="remove_team_container" class="remove-item-container">
 				<button name="remove_team">
-					+ Remove team
+					- Remove this team
 				</button>
 			</div>
 			</div>
